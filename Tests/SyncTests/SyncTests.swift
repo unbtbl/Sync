@@ -10,7 +10,7 @@ let testMacros: [String: Macro.Type] = [
 
 final class SyncTests: XCTestCase {
     override func invokeTest() {
-        withMacroTesting(isRecording: true, macros: testMacros) {
+        withMacroTesting(isRecording: false, macros: testMacros) {
             super.invokeTest()
         }
     }
