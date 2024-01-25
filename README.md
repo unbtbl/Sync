@@ -8,7 +8,7 @@ Our primary use case for this package is with [The Composable Architecture](http
 
 ## Usage
 
-```
+```swift
 import Sync
 
 struct UserProfile {
