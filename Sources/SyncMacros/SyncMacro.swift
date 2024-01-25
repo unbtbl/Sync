@@ -1,4 +1,3 @@
-import MacroToolkit
 import SwiftCompilerPlugin
 import SwiftSyntax
 import SwiftSyntaxBuilder
@@ -92,7 +91,7 @@ extension SyncMacro: AccessorMacro {
                 \(optionalGetGuardStatement)return _syncToChild(
                     parent: self,
                     child: \(storedVariableName),
-                    \(arguments.withoutTrivia())
+                    \(arguments.trimmed)
                 )
             }
             """,
@@ -101,7 +100,7 @@ extension SyncMacro: AccessorMacro {
                 \(optionalSetGuardStatement)\(storedVariableName) = _syncToParent(
                     parent: &self,
                     child: newValue,
-                    \(arguments.withoutTrivia())
+                    \(arguments.trimmed)
                 )
             }
             """,
@@ -125,9 +124,9 @@ extension SyncMacro: PeerMacro {
 
         return [
             """
-            /// The backing storage for the ``\(binding.withoutTrivia())`` property.
-            /// - Note: The value of this property is not synchronized with the parent. Use the ``\(binding.withoutTrivia())`` property instead.
-            private var _\(binding.withoutTrivia())
+            /// The backing storage for the ``\(binding.trimmed)`` property.
+            /// - Note: The value of this property is not synchronized with the parent. Use the ``\(binding.trimmed)`` property instead.
+            private var _\(binding.trimmed)
             """
         ]
     }
