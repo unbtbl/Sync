@@ -45,8 +45,8 @@ final class SyncTests: XCTestCase {
                 }
             }
 
-            /// The backing storage for the ``foo: Int`` property.
-            /// - Note: The value of this property is not synchronized with the parent. Use the ``foo: Int`` property instead.
+            /// The backing storage for the ``foo`` property.
+            /// - Note: The value of this property is not synchronized with the parent. Use the ``foo`` property instead.
             private var _foo: Int
             """#
         }
@@ -89,8 +89,8 @@ final class SyncTests: XCTestCase {
                 }
             }
 
-            /// The backing storage for the ``foo: Int?`` property.
-            /// - Note: The value of this property is not synchronized with the parent. Use the ``foo: Int?`` property instead.
+            /// The backing storage for the ``foo`` property.
+            /// - Note: The value of this property is not synchronized with the parent. Use the ``foo`` property instead.
             private var _foo: Int?
             """#
         }

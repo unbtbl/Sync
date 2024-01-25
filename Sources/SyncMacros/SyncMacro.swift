@@ -121,11 +121,15 @@ extension SyncMacro: PeerMacro {
         guard let binding = declaration.bindings.first, declaration.bindings.count == 1 else {
             throw SyncMacroError.unsupportedNumberOfBindings
         }
+        
+        guard let bindingIdentifier = binding.pattern.as(IdentifierPatternSyntax.self) else {
+            throw SyncMacroError.invalidPattern
+        }
 
         return [
             """
-            /// The backing storage for the ``\(binding.trimmed)`` property.
-            /// - Note: The value of this property is not synchronized with the parent. Use the ``\(binding.trimmed)`` property instead.
+            /// The backing storage for the ``\(bindingIdentifier.trimmed)`` property.
+            /// - Note: The value of this property is not synchronized with the parent. Use the ``\(bindingIdentifier.trimmed)`` property instead.
             private var _\(binding.trimmed)
             """
         ]
