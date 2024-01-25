@@ -37,39 +37,3 @@ public func _syncToParent<Parent, Child, each Value>(
 
     return child
 }
-
-struct ExampleParent {
-    var country: String
-    var city: String
-
-    // @Sync(
-    //    (\ExampleChild.country, to: \ExampleParent.country),
-    //    (\ExampleChild.city, to: \ExampleParent.city),
-    // )
-    var child: ExampleChild /* generated: */ {
-        get {
-            _syncToChild(
-                parent: self,
-                child: _child,
-                (\ExampleChild.country, to: \ExampleParent.country),
-                (\ExampleChild.city, to: \ExampleParent.city)
-            )
-        }
-        set {
-            _child = _syncToParent(
-                parent: &self,
-                child: newValue,
-                (\ExampleChild.country, to: \ExampleParent.country),
-                (\ExampleChild.city, to: \ExampleParent.city)
-            )
-        }
-    }
-
-    private var _child: ExampleChild
-}
-
-struct ExampleChild {
-    var country: String
-    var city: String
-    var street: String
-}
