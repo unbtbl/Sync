@@ -9,6 +9,7 @@ enum SyncMacroError: Error, CustomStringConvertible {
     case unsupportedNumberOfBindings
     case invalidPattern
     case noArguments
+    case missingTypeAnnotation
 
     var description: String {
         switch self {
@@ -21,6 +22,8 @@ enum SyncMacroError: Error, CustomStringConvertible {
                 "@Sync can only be applied to a variable declaration with a single binding with an identifier pattern"
         case .noArguments:
             return "@Sync requires at least one argument"
+        case .missingTypeAnnotation:
+            return "@Sync requires a type annotation"
         }
     }
 }
@@ -51,12 +54,42 @@ extension SyncMacro: AccessorMacro {
             throw SyncMacroError.invalidPattern
         }
 
+        guard let bindingType = binding.typeAnnotation?.type else {
+            throw SyncMacroError.missingTypeAnnotation
+        }
+
         let storedVariableName: TokenSyntax = "_\(bindingIdentifier.identifier)"
+
+        // TODO: Support `Optional<Wrapped>` instead of `Wrapped?`
+        let optionalGetGuardStatement: DeclSyntax =
+            if bindingType.is(OptionalTypeSyntax.self) {
+                """
+                guard let \(storedVariableName) else {
+                    return nil
+                }
+
+                """
+            } else {
+                ""
+            }
+
+        let optionalSetGuardStatement: DeclSyntax =
+            if bindingType.is(OptionalTypeSyntax.self) {
+                """
+                guard let newValue else {
+                    \(storedVariableName) = nil
+                    return
+                }
+
+                """
+            } else {
+                ""
+            }
 
         return [
             """
             get {
-                _syncToChild(
+                \(optionalGetGuardStatement)return _syncToChild(
                     parent: self,
                     child: \(storedVariableName),
                     \(arguments.withoutTrivia())
@@ -65,7 +98,7 @@ extension SyncMacro: AccessorMacro {
             """,
             """
             set {
-                \(storedVariableName) = _syncToParent(
+                \(optionalSetGuardStatement)\(storedVariableName) = _syncToParent(
                     parent: &self,
                     child: newValue,
                     \(arguments.withoutTrivia())
@@ -92,6 +125,8 @@ extension SyncMacro: PeerMacro {
 
         return [
             """
+            /// The backing storage for the ``\(binding.withoutTrivia())`` property.
+            /// - Note: The value of this property is not synchronized with the parent. Use the ``\(binding.withoutTrivia())`` property instead.
             private var _\(binding.withoutTrivia())
             """
         ]

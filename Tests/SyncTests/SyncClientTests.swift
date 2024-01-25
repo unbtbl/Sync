@@ -69,4 +69,33 @@ final class SyncClientTests: XCTestCase {
             _child = ChildStruct(country: "USA", city: "New York", street: "Broadway")
         }
     }
+
+    func testMacroClientWithOptionalChild() {
+        var parent = WithOptionalChild()
+        XCTAssertEqual(parent.country, "USA")
+        XCTAssertEqual(parent.city, "New York")
+        XCTAssertEqual(parent.child?.country, "USA")
+        XCTAssertEqual(parent.child?.city, "New York")
+        XCTAssertEqual(parent.child?.street, "Broadway")
+
+        parent.country = "Canada"
+        XCTAssertEqual(parent.country, "Canada")
+        XCTAssertEqual(parent.city, "New York")
+        XCTAssertEqual(parent.child?.country, "Canada")
+        XCTAssertEqual(parent.child?.city, "New York")
+        XCTAssertEqual(parent.child?.street, "Broadway")
+
+        parent.child?.city = "Toronto"
+        parent.child?.street = "Yonge Street"
+        XCTAssertEqual(parent.country, "Canada")
+        XCTAssertEqual(parent.city, "Toronto")
+        XCTAssertEqual(parent.child?.country, "Canada")
+        XCTAssertEqual(parent.child?.city, "Toronto")
+        XCTAssertEqual(parent.child?.street, "Yonge Street")
+
+        parent.child = nil
+        XCTAssertEqual(parent.country, "Canada")
+        XCTAssertEqual(parent.city, "Toronto")
+        XCTAssertNil(parent.child)
+    }
 }

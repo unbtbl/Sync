@@ -10,7 +10,7 @@ let testMacros: [String: Macro.Type] = [
 
 final class SyncTests: XCTestCase {
     override func invokeTest() {
-        withMacroTesting(isRecording: false, macros: testMacros) {
+        withMacroTesting(isRecording: true, macros: testMacros) {
             super.invokeTest()
         }
     }
@@ -28,7 +28,7 @@ final class SyncTests: XCTestCase {
             #"""
             var foo: Int {
                 get {
-                    _syncToChild(
+                    return _syncToChild(
                         parent: self,
                         child: _foo,
                         (\ExampleChild.country, to: \ExampleParent.country),
@@ -45,7 +45,53 @@ final class SyncTests: XCTestCase {
                 }
             }
 
+            /// The backing storage for the ``foo: Int`` property.
+            /// - Note: The value of this property is not synchronized with the parent. Use the ``foo: Int`` property instead.
             private var _foo: Int
+            """#
+        }
+    }
+
+    func testMacroWithOptionalChild() throws {
+        assertMacro {
+            #"""
+            @Sync(
+                (\ExampleChild.country, to: \ExampleParent.country),
+                (\ExampleChild.city, to: \ExampleParent.city)
+            )
+            var foo: Int?
+            """#
+        } expansion: {
+            #"""
+            var foo: Int? {
+                get {
+                    guard let _foo else {
+                        return nil
+                    }
+                    return _syncToChild(
+                            parent: self,
+                            child: _foo,
+                            (\ExampleChild.country, to: \ExampleParent.country),
+                                (\ExampleChild.city, to: \ExampleParent.city)
+                        )
+                }
+                set {
+                    guard let newValue else {
+                        _foo = nil
+                        return
+                    }
+                    _foo = _syncToParent(
+                            parent: &self,
+                            child: newValue,
+                            (\ExampleChild.country, to: \ExampleParent.country),
+                                (\ExampleChild.city, to: \ExampleParent.city)
+                        )
+                }
+            }
+
+            /// The backing storage for the ``foo: Int?`` property.
+            /// - Note: The value of this property is not synchronized with the parent. Use the ``foo: Int?`` property instead.
+            private var _foo: Int?
             """#
         }
     }
