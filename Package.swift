@@ -24,9 +24,9 @@ let package = Package(
 
         /// 🪄 Magical testing tools for Swift macros.
         .package(url: "https://github.com/pointfreeco/swift-macro-testing.git", from: "0.2.2"),
-
-        /// Macro helpers
-        .package(url: "https://github.com/stackotter/swift-macro-toolkit.git", from: "0.3.1"),
+        
+        /// For enum support
+        .package(url: "https://github.com/pointfreeco/swift-case-paths.git", from: "1.2.1")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
