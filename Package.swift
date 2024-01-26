@@ -41,7 +41,12 @@ let package = Package(
         ),
 
         // Library that exposes a macro as part of its API, which is used in client programs.
-        .target(name: "Sync", dependencies: ["SyncMacros"]),
+        .target(name: "Sync", dependencies: [
+            "SyncMacros",
+            
+            // For enum support
+            .product(name: "CasePaths", package: "swift-case-paths"),
+        ]),
 
         // A client of the library, which is able to use the macro in its own code.
         .executableTarget(name: "SyncClient", dependencies: ["Sync"]),
